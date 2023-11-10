@@ -7,7 +7,7 @@ using UnityEngine.Windows;
 using UnityModManagerNet;
 
 // TODO: Rename this namespace to your mod's name.
-namespace MyAdofaiMod
+namespace AquaLeader
 {
 
     [HarmonyPatch]
@@ -21,15 +21,14 @@ namespace MyAdofaiMod
         }
 
         static private HitMargin ThisHitMargin = HitMargin.Perfect;
+        static private int ChunkNumber = 0;
 
         // called when a value is added to the current score manager thingy
         [HarmonyPatch(typeof(scrMistakesManager), "AddHit")]
         [HarmonyPrefix]
         public static void AddHitFix(HitMargin hit)
         {
-
             ThisHitMargin = hit;
-
         }
 
         // called when a valid movement is triggered (Moving in menu, Tapping in game or missing in game)
@@ -64,7 +63,7 @@ namespace MyAdofaiMod
         public static void OnEnterLevel(string worldAndLevel, bool speedTrial)
         {
 
-            MainClass.Logger.Log(worldAndLevel);
+            MainClass.Log(worldAndLevel);
 
         }
 
@@ -81,7 +80,7 @@ namespace MyAdofaiMod
                 isCustom = true;
             }
 
-            MainClass.Logger.Log(levelPath + ", " + isCustom);
+            MainClass.Log(levelPath + ", " + isCustom);
 
         }
 
@@ -91,7 +90,8 @@ namespace MyAdofaiMod
         public static void FailActionPatch()
         {
 
-            MainClass.Logger.Log("User fail action, Discard current chunk!");
+            MainClass.Log("User fail action, Discard current chunk!");
+            ChunkNumber--;
 
         }
 
@@ -101,7 +101,7 @@ namespace MyAdofaiMod
         public static void ResetScenePatch()
         {
 
-            MainClass.Logger.Log("Reset Scene action!");
+            MainClass.Log("Reset Scene action!");
 
         }
 
@@ -111,20 +111,47 @@ namespace MyAdofaiMod
         public static void OnLandOnPortalPatch()
         {
 
+            scrController controller = scrController.instance;
+            scrPlanet planet = controller.chosenplanet;
+            scrConductor conductor = planet.conductor;
+
             if (scrController.instance.gameworld)
             {
-                MainClass.Logger.Log("Has Finished Level!");
+                MainClass.Log("Has Finished Level!");
+
             }
 
         }
 
-        // triggerd when landing on generic portal
+        // triggerd when respawning at a checkpoint after the count down
         [HarmonyPatch(typeof(scrController), "Checkpoint_Exit")]
         [HarmonyPostfix]
         public static void OnCheckpointExit()
         {
 
-            MainClass.Logger.Log("Exited Checkpoint");
+            MainClass.Log("Exited Checkpoint");
+
+        }
+
+        // triggered when respawning at a checkpoint before the count down 
+        [HarmonyPatch(typeof(scrController), "Checkpoint_Enter")]
+        [HarmonyPostfix]
+        public static void OnCheckpointEnter()
+        {
+
+            MainClass.Log("Entered Checkpoint");
+            ChunkNumber++;
+
+        }
+
+        // triggered when respawning at a checkpoint before the count down 
+        [HarmonyPatch(typeof(scrMistakesManager), "MarkCheckpoint")]
+        [HarmonyPostfix]
+        public static void OnCheckpointUpdate()
+        {
+
+            ChunkNumber++;
+            MainClass.Log("On Chunk: " + ChunkNumber);
 
         }
 
@@ -135,14 +162,13 @@ namespace MyAdofaiMod
         {
 
             scrController controller = scrController.instance;
-            scrPlanet planet = controller.chosenplanet;
-            scrConductor conductor = planet.conductor;
 
-            MainClass.Logger.Log("PlayerControl_Enter");
+            //MainClass.Log("PlayerControl_Enter");
 
             if (controller.currentSeqID == 0 && controller.gameworld) 
             {
-                MainClass.Logger.Log("Level start, from begining!");
+                MainClass.Log("Level start, from begining!");
+                ChunkNumber = 0;
             }
 
         }

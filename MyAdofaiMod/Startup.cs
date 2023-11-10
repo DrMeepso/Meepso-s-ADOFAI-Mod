@@ -1,7 +1,7 @@
 ﻿using UnityModManagerNet;
 
 // TODO: Rename this namespace to your mod's name.
-namespace MyAdofaiMod
+namespace AquaLeader
 {
     /// <summary>
     /// Entry class for the mod.

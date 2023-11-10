@@ -7,8 +7,8 @@
     <ProjectGuid>{E1F2A3A1-5307-4D6E-AFC0-F62FE6536CB4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MyAdofaiMod</RootNamespace>
-    <AssemblyName>MyAdofaiMod</AssemblyName>
+    <RootNamespace>AquaLeader</RootNamespace>
+    <AssemblyName>AquaLeader</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -75,7 +75,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>del "E:\SteamInstall\steamapps\common\A Dance of Fire and Ice\Mods\TestMod\MyAdofaiMod.dll"
+    <PostBuildEvent>del "E:\SteamInstall\steamapps\common\A Dance of Fire and Ice\Mods\TestMod\AquaLeader.dll"
 copy "$(TargetPath)" "E:\SteamInstall\steamapps\common\A Dance of Fire and Ice\Mods\TestMod"</PostBuildEvent>
   </PropertyGroup>
 </Project>
