@@ -10,7 +10,7 @@ namespace AquaLeader
     {
         // entry point for UMM
         internal static void Load(UnityModManager.ModEntry modEntry) {
-            MainClass.Setup(modEntry);
+            AquaMain.Setup(modEntry);
         }
     }
 }

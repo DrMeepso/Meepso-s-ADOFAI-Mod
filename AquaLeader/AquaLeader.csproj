@@ -40,6 +40,10 @@
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>E:\SteamInstall\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\SteamInstall\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="RDTools, Version=1.0.8630.31434, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -67,9 +71,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Saving.cs" />
     <Compile Include="Utils.cs" />
-    <Compile Include="MainClass.cs" />
-    <Compile Include="Patches.cs" />
+    <Compile Include="AquaMain.cs" />
+    <Compile Include="ADOFAIPatches.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

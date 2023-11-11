@@ -11,7 +11,7 @@ namespace AquaLeader
 {
 
     [HarmonyPatch]
-    public static class Patches
+    public static class ADOFAIPatches
     {
         [HarmonyPatch(typeof(scrController), "CountValidKeysPressed")]
         [HarmonyPostfix]
@@ -41,8 +41,6 @@ namespace AquaLeader
             scrPlanet planet = controller.chosenplanet;
             scrConductor conductor = planet.conductor;
 
-            planet.angle = 0;
-
             if (!controller.gameworld) return;
 
             //UnityModManager.Logger.Clear();
@@ -55,6 +53,11 @@ namespace AquaLeader
             //MainClass.Logger.Log(conductor.songposition_minusi +" : "+ planet.currfloor.entryTime);
             //MainClass.Logger.Log(Time.unscaledDeltaTime.ToString());
 
+            if (Saving.IsRecordingReplay)
+            {
+                Saving.OnReplayInput(InputHit, conductor.songposition_minusi, planet.other.transform.position, planet.currfloor.seqID);
+            }
+
         }
 
         // on offical level loaded
@@ -63,7 +66,7 @@ namespace AquaLeader
         public static void OnEnterLevel(string worldAndLevel, bool speedTrial)
         {
 
-            MainClass.Log(worldAndLevel);
+            AquaMain.Log(worldAndLevel);
 
         }
 
@@ -73,14 +76,7 @@ namespace AquaLeader
         public static void OnEnterCustomLevel(string levelPath)
         {
 
-            bool isCustom = false;
-
-            if (levelPath.IndexOfAny(Path.GetInvalidPathChars()) == -1)
-            {
-                isCustom = true;
-            }
-
-            MainClass.Log(levelPath + ", " + isCustom);
+            
 
         }
 
@@ -90,7 +86,8 @@ namespace AquaLeader
         public static void FailActionPatch()
         {
 
-            MainClass.Log("User fail action, Discard current chunk!");
+            AquaMain.Log("User fail action, Discard current chunk!");
+            Saving.ResetCurrentChunk();
             ChunkNumber--;
 
         }
@@ -101,7 +98,8 @@ namespace AquaLeader
         public static void ResetScenePatch()
         {
 
-            MainClass.Log("Reset Scene action!");
+            AquaMain.Log("Reset Scene action!");
+
 
         }
 
@@ -111,13 +109,10 @@ namespace AquaLeader
         public static void OnLandOnPortalPatch()
         {
 
-            scrController controller = scrController.instance;
-            scrPlanet planet = controller.chosenplanet;
-            scrConductor conductor = planet.conductor;
-
             if (scrController.instance.gameworld)
             {
-                MainClass.Log("Has Finished Level!");
+                //AquaMain.Log("Has Finished Level!");
+                Saving.FinishRecording();
 
             }
 
@@ -129,7 +124,7 @@ namespace AquaLeader
         public static void OnCheckpointExit()
         {
 
-            MainClass.Log("Exited Checkpoint");
+            //AquaMain.Log("Exited Checkpoint");
 
         }
 
@@ -139,19 +134,20 @@ namespace AquaLeader
         public static void OnCheckpointEnter()
         {
 
-            MainClass.Log("Entered Checkpoint");
+            AquaMain.Log("Entered Checkpoint");
             ChunkNumber++;
 
         }
 
-        // triggered when respawning at a checkpoint before the count down 
+        // triggered when new chunk is triggered
         [HarmonyPatch(typeof(scrMistakesManager), "MarkCheckpoint")]
         [HarmonyPostfix]
         public static void OnCheckpointUpdate()
         {
 
             ChunkNumber++;
-            MainClass.Log("On Chunk: " + ChunkNumber);
+            //AquaMain.Log("On Chunk: " + ChunkNumber);
+            Saving.AddNewChunk(GCS.checkpointNum);
 
         }
 
@@ -162,13 +158,21 @@ namespace AquaLeader
         {
 
             scrController controller = scrController.instance;
+            scrConductor conductor = controller.chosenplanet.conductor;
 
             //MainClass.Log("PlayerControl_Enter");
 
             if (controller.currentSeqID == 0 && controller.gameworld) 
             {
-                MainClass.Log("Level start, from begining!");
+                AquaMain.Log("Level start, from begining!");
                 ChunkNumber = 0;
+                Saving.StartNewReplay();
+                AquaMain.Log(GCS.customLevelId == null ? "Offical" : "Custom");
+
+                if (GCS.customLevelId != null)
+                {
+                    AquaMain.Log(conductor.customLevelComponent.levelPath);
+                }
             }
 
         }

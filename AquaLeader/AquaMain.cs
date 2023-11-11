@@ -18,7 +18,7 @@ namespace AquaLeader
         public long UnixTime;
     }
 
-    public static class MainClass
+    public static class AquaMain
     {
 
         public static bool IsEnabled { get; private set; }
@@ -68,9 +68,9 @@ namespace AquaLeader
             for (int i = 0; i < Logs.Length; i++) 
             {
 
-                GUI.Box(new Rect(10, (35 * i) + 5, 300, 30), Logs[i].Message);
+                GUI.Box(new Rect(10, (35 * i) + 5, 500, 30), Logs[i].Message);
 
-                if (DateTimeOffset.UtcNow.ToUnixTimeSeconds() - Logs[i].UnixTime > 5)
+                if (DateTimeOffset.UtcNow.ToUnixTimeSeconds() - Logs[i].UnixTime > 10)
                 {
                     loggedValues.Remove(Logs[i]);
                 }
@@ -94,6 +94,7 @@ namespace AquaLeader
         {
             LoggedValue thisLog = new LoggedValue { Message = message, UnixTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds() };
             loggedValues.Add(thisLog);
+            Logger.Log(message);
         }
     }
 }
