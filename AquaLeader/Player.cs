@@ -33,22 +33,61 @@ namespace AquaLeader
         public static bool IsPlayingReplay { get; private set; }
         public static List<LoadedReplayFile> LoadedReplays = new List<LoadedReplayFile>();
 
+        public static ReplayInfo CurrentReplay;
+        public static List<InputAction> allInputs;
+        public static List<InputAction> finishedInputs;
+
         public static void Setup()
         {
 
             IsPlayingReplay = false;
             LoadedReplays = new List<LoadedReplayFile>();
 
+            allInputs = new List<InputAction>();
+            finishedInputs = new List<InputAction>();
+
         }
 
+        private static InputAction[] actions;
         public static void Update()
         {
 
+            scrController controller = scrController.instance;
+            scrPlanet planet = controller.chosenplanet;
+            scrConductor conductor = planet.conductor;
+
             SteamAPI.RunCallbacks();
 
-            if (IsPlayingReplay && !scrController.instance.gameworld)
+
+            if (IsPlayingReplay && scrController.instance.gameworld)
             {
-                IsPlayingReplay = false;
+
+                for (int i = 0; i < actions.Length; i++)
+                {
+                    InputAction input = actions[i];
+
+                    if (!finishedInputs.Contains(input))
+                    {
+
+                        //AquaMain.Log("i");
+
+                        if (conductor.songposition_minusi > input.InputTime && controller.currentState == States.PlayerControl)
+                        {
+
+                            finishedInputs.Add(input);
+
+                            input.hasRun = true;
+                            controller.Hit();
+
+
+                            AquaMain.Log("Run: " + i);
+
+                        }
+
+                    }
+
+                }
+
             }
 
         }
@@ -143,8 +182,8 @@ namespace AquaLeader
 
         }
 
-        static private Rect SelectRec = new Rect(0, 0, 180, 200);
-        static private Vector2 ReplayListScrollVector = new Vector2(0, 0);
+        static private Rect SelectRec = new Rect(0, 0, 180, 500);
+        static private Vector2 ReplayListScrollVector;
         public static void OnGUI()
         {
 
@@ -216,13 +255,26 @@ namespace AquaLeader
         public static void StartReplay(LoadedReplayFile file)
         {
 
+            allInputs.Clear();
+
+            file.Replay.Chunks.ForEach(chunk => {
+                AquaMain.Log("Chunk");
+                allInputs.AddRange(chunk.ChunkInputs);
+                AquaMain.Log(allInputs.Count + "");
+            });
+
+            actions = allInputs.ToArray();
+
             SceneManager.LoadScene("scnGame", LoadSceneMode.Single);
             GCS.customLevelPaths = new string[1];
             GCS.customLevelPaths[0] = file.PathToMap;
             GCS.checkpointNum = 0;
             GCS.customLevelId = "Replay";
 
+            CurrentReplay = file.Replay;
+
             IsPlayingReplay = true;
+            scrController.instance.gameworld = true;
 
         }
 

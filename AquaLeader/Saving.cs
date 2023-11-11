@@ -39,12 +39,15 @@ namespace AquaLeader
         static public void OnReplayInput(HitMargin hitInfo, double InputTime, Vector2 PlanetPos, int SeqID)
         {
 
+            if (scrController.instance.state != States.PlayerControl) return;
+
             InputAction action = new InputAction
             {
                 hitMargin = hitInfo,
                 InputTime = InputTime,
                 PlanetPosition = Utils.Vector2ToVec2(PlanetPos),
-                FloorSeqID = SeqID
+                FloorSeqID = SeqID,
+                hasRun = false
             };
 
             CurrentChunk.ChunkInputs.Add(action);

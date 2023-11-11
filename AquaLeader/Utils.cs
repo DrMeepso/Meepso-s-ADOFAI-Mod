@@ -46,6 +46,8 @@ namespace AquaLeader
         public Vec2 PlanetPosition;
         public int FloorSeqID;
 
+        public bool hasRun; // just for use in playback
+
     }
 
     public struct Vec2

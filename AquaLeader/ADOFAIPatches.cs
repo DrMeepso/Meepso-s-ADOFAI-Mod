@@ -17,6 +17,12 @@ namespace AquaLeader
         [HarmonyPostfix]
         public static void ValidKey(int __result)
         {
+
+            if (Player.IsPlayingReplay)
+            {
+                __result = 0;
+            }
+
             //MainClass.Logger.Log($"User pressed {__result} key(s).");
         }
 
@@ -41,7 +47,7 @@ namespace AquaLeader
             scrPlanet planet = controller.chosenplanet;
             scrConductor conductor = planet.conductor;
 
-            if (!controller.gameworld) return;
+            if (!controller.gameworld || Player.IsPlayingReplay) return;
 
             //UnityModManager.Logger.Clear();
 
@@ -86,6 +92,8 @@ namespace AquaLeader
         public static void FailActionPatch()
         {
 
+            if (Player.IsPlayingReplay) return;
+
             AquaMain.Log("User fail action, Discard current chunk!");
             Saving.ResetCurrentChunk();
             ChunkNumber--;
@@ -108,6 +116,8 @@ namespace AquaLeader
         [HarmonyPrefix]
         public static void OnLandOnPortalPatch()
         {
+
+            if (Player.IsPlayingReplay) return;
 
             if (scrController.instance.gameworld)
             {
@@ -134,6 +144,8 @@ namespace AquaLeader
         public static void OnCheckpointEnter()
         {
 
+            if (Player.IsPlayingReplay) return;
+
             AquaMain.Log("Entered Checkpoint");
             ChunkNumber++;
 
@@ -144,6 +156,8 @@ namespace AquaLeader
         [HarmonyPostfix]
         public static void OnCheckpointUpdate()
         {
+
+            if (Player.IsPlayingReplay) return;
 
             ChunkNumber++;
             //AquaMain.Log("On Chunk: " + ChunkNumber);
@@ -164,6 +178,15 @@ namespace AquaLeader
 
             if (controller.currentSeqID == 0 && controller.gameworld) 
             {
+
+                if (Player.IsPlayingReplay)
+                {
+                    Player.finishedInputs.Clear();
+                    AquaMain.Log("Clearing Used Inputs");
+                }
+
+                if (Player.IsPlayingReplay) return;
+
                 AquaMain.Log("Level start, from begining!");
                 ChunkNumber = 0;
                 Saving.StartNewReplay();
@@ -173,7 +196,12 @@ namespace AquaLeader
                 {
                     AquaMain.Log(conductor.customLevelComponent.levelPath);
                 }
+
+
+
             }
+
+
 
         }
 
