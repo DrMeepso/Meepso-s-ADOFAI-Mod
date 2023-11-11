@@ -14,8 +14,16 @@ namespace AquaLeader
         public float Version;
         public string MD5LevelHash;
 
+        public ReplayResultsInfo Results;
+
         public List<ReplayChunk> Chunks;
 
+    }
+
+    struct ReplayResultsInfo
+    {
+        public float XPercentage;
+        public float Percentage;
     }
 
     [Serializable]
@@ -74,6 +82,12 @@ namespace AquaLeader
             File.WriteAllText(Application.dataPath + "\\Replays\\" + FileName, replayFile);
             return true;
         }
+
+        public static string RemoveInvalidChars(string filename)
+        {
+            return string.Concat(filename.Split(Path.GetInvalidFileNameChars()));
+        }
+
     }
  
     

@@ -95,16 +95,26 @@ namespace AquaLeader
                     string LevelHash = Utils.CreateMD5(LevelContence);
                     AquaMain.Log(Utils.CreateMD5(LevelContence));
 
+                    controller.mistakesManager.CalculatePercentAcc();
+                    ReplayResultsInfo resultsInfo = new ReplayResultsInfo
+                    {
+                        XPercentage = controller.mistakesManager.percentXAcc,
+                        Percentage = controller.mistakesManager.percentAcc,
+                    };
+
                     ReplayInfo ThisReplay = new ReplayInfo
                     {
                         Chunks = AllChunks,
                         MD5LevelHash = LevelHash,
-                        Version = 1
+                        Version = 1,
+                        Results = resultsInfo
                     };
 
                     string SerializedReplay = JsonConvert.SerializeObject(ThisReplay);
-                    string FileName = ThisGame.levelData.song + "-" + DateTimeOffset.UtcNow.ToString() + ".ALRpl";
+                    string FileName = Utils.RemoveInvalidChars(ThisGame.levelData.song + "-" + DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()) + ".alrpl";
                     Utils.SaveReplayFile(SerializedReplay, FileName);
+
+                    AquaMain.Log("Saved replay: " + FileName);
 
                 }
             }
