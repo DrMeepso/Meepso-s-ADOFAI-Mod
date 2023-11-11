@@ -91,9 +91,8 @@ namespace AquaLeader
                 AquaMain.Log(LevelPath);
                 if (File.Exists(LevelPath))
                 {
-                    string LevelContence = File.ReadAllText(LevelPath);
-                    string LevelHash = Utils.CreateMD5(LevelContence);
-                    AquaMain.Log(Utils.CreateMD5(LevelContence));
+                    string LevelHash = Utils.GetHashOfPath(LevelPath);
+                    AquaMain.Log(LevelHash);
 
                     controller.mistakesManager.CalculatePercentAcc();
                     ReplayResultsInfo resultsInfo = new ReplayResultsInfo

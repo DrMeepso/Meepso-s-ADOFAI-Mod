@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using ADOFAI.Editor.Actions;
 using HarmonyLib;
+using Steamworks;
 using UnityEngine;
 using UnityModManagerNet;
 using static UnityModManagerNet.UnityModManager;
@@ -36,12 +37,37 @@ namespace AquaLeader
             Logger = modEntry.Logger;
             ModEntry = modEntry;
 
+            SteamAPI.Init(); // start steamworks API
+            Player.Setup(); // setup the player class
+
             // Add hooks to UMM event methods
             modEntry.OnToggle = OnToggle;
             modEntry.OnFixedGUI = OnGUI;
+            modEntry.OnUpdate = OnUpdate;
 
-            GCS.banished = false;
+            modEntry.OnUnload = Unload;
 
+            GCS.banished = true;
+
+        }
+
+        static bool Unload(UnityModManager.ModEntry modEntry)
+        {
+
+            Log("Hot Loading New Version Of Mod");
+
+            StopMod(modEntry); // unpatch
+
+            modEntry.OnToggle = null;
+            modEntry.OnFixedGUI = null;
+            modEntry.OnUpdate = null;
+
+            return true;
+        }
+
+        private static void OnUpdate(UnityModManager.ModEntry modEntry, float dt)
+        {
+            Player.Update(); // allow the player to lissen to unity updates
         }
 
         private static bool OnToggle(UnityModManager.ModEntry modEntry, bool value) {
@@ -62,6 +88,8 @@ namespace AquaLeader
         private static void OnGUI(UnityModManager.ModEntry modEntry) 
         {
 
+
+
             LoggedValue[] Logs = loggedValues.ToArray();
             Array.Reverse(Logs);
 
@@ -75,6 +103,11 @@ namespace AquaLeader
                     loggedValues.Remove(Logs[i]);
                 }
 
+            }
+
+            if (IsEnabled)
+            {
+                Player.OnGUI(); // allow the player to show GUI
             }
 
         }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ADOFAI;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -86,6 +87,12 @@ namespace AquaLeader
         public static string RemoveInvalidChars(string filename)
         {
             return string.Concat(filename.Split(Path.GetInvalidFileNameChars()));
+        }
+
+        public static string GetHashOfPath(string path)
+        {
+            string LevelContence = File.ReadAllText(path);
+            return CreateMD5(LevelContence);
         }
 
     }

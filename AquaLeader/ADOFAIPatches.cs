@@ -177,6 +177,15 @@ namespace AquaLeader
 
         }
 
+        // triggerd when controll is handed to the player!
+        [HarmonyPatch(typeof(SteamManager), "Awake")]
+        [HarmonyPostfix]
+        public static void SteamManagerAwake()
+        {
+
+            AquaMain.Log("Steamworks Started!");
+
+        }
 
     }
 }
